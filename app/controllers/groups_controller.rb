@@ -5,43 +5,43 @@ class GroupsController < ApplicationController
     @groups = Group.all
   end
 
-  def new
-    @group = Group.new
-  end
-
   def show
     @group = Group.find(params[:id])
     @posts = @group.posts.recent.paginate(:page => params[:page], :per_page => 5)
   end
 
-  def edit
+  def destroy
+    @group.destroy
+    redirect_to groups_path, alert: "Group deleted"
+  end
+
+  def new
+    @group = Group.new
   end
 
   def create
     @group = Group.new(group_params)
     @group.user = current_user
-       if  @group.save
-         current_user.join!(@group)
-         redirect_to groups_path
-           else
-              render :new
-       end
+
+    if  @group.save
+      current_user.join!(@group)
+      redirect_to groups_path
+    else
+      render :new
+    end
+
+  end
+
+  def edit
   end
 
   def update
-
     if @group.update(group_params)
       redirect_to groups_path, notice: "Update success"
     else
       render :edit
     end
   end
-
-   def destroy
-
-     @group.destroy
-     redirect_to groups_path, alert: "Group deleted"
-   end
 
    def join
      @group = Group.find(params[:id])
